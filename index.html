@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CivicPulse AI — Smart Community Issue Intelligence</title>
+<style>
+  :root{
+    --primary:#0B5D3B;
+    --secondary:#F4B942;
+    --accent:#1C7C54;
+    --bg:#F7FAF8;
+    --card:#FFFFFF;
+    --text:#173A2B;
+    --muted:#5C6F65;
+    --danger:#C0392B;
+    --warn:#E08E1D;
+    --ok:#2E8B57;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    font-family:'Segoe UI',Calibri,Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    min-height:100vh;
+  }
+  header{
+    background:linear-gradient(135deg,var(--primary),var(--accent));
+    color:white;
+    padding:28px 5%;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:12px;
+  }
+  header .brand{display:flex;align-items:center;gap:14px;}
+  header .brand .logo{
+    width:44px;height:44px;border-radius:50%;
+    background:var(--secondary);
+    display:flex;align-items:center;justify-content:center;
+    font-size:22px;font-weight:bold;color:var(--primary);
+  }
+  header h1{font-size:22px;font-weight:700;}
+  header p{font-size:13px;opacity:0.85;margin-top:2px;}
+  .stats-bar{
+    display:flex;gap:10px;flex-wrap:wrap;
+  }
+  .stat-pill{
+    background:rgba(255,255,255,0.15);
+    padding:8px 16px;border-radius:20px;
+    font-size:13px;
+  }
+  .stat-pill b{font-size:16px;display:block;}
+
+  main{
+    max-width:1200px;margin:0 auto;padding:32px 5%;
+    display:grid;grid-template-columns:1fr 1.4fr;gap:28px;
+  }
+  @media (max-width:900px){ main{grid-template-columns:1fr;} }
+
+  .card{
+    background:var(--card);
+    border-radius:14px;
+    padding:24px;
+    box-shadow:0 2px 10px rgba(11,93,59,0.08);
+  }
+  .card h2{font-size:18px;margin-bottom:16px;color:var(--primary);}
+
+  label{font-size:13px;font-weight:600;color:var(--muted);display:block;margin:14px 0 6px;}
+  input[type=text], textarea, select{
+    width:100%;padding:10px 12px;border:1.5px solid #dde5e0;border-radius:8px;
+    font-size:14px;font-family:inherit;background:#fcfefd;
+  }
+  textarea{resize:vertical;min-height:70px;}
+  input:focus, textarea:focus, select:focus{outline:none;border-color:var(--accent);}
+
+  .loc-row{display:flex;gap:10px;}
+  .loc-row button{
+    padding:0 14px;border:1.5px solid #dde5e0;border-radius:8px;background:#fcfefd;cursor:pointer;font-size:13px;
+  }
+
+  button.submit-btn{
+    margin-top:20px;width:100%;padding:13px;
+    background:var(--primary);color:white;border:none;border-radius:10px;
+    font-size:15px;font-weight:700;cursor:pointer;
+    transition:transform .1s;
+  }
+  button.submit-btn:hover{transform:translateY(-1px);background:var(--accent);}
+  button.submit-btn:disabled{background:#a9b8ad;cursor:wait;}
+
+  .ai-result{
+    margin-top:16px;padding:14px;border-radius:10px;background:#eef7f0;
+    border:1px dashed var(--accent);font-size:13px;display:none;
+  }
+  .ai-result.show{display:block;}
+  .ai-result .badge{
+    display:inline-block;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;color:white;margin-right:6px;
+  }
+
+  .filters{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+  .filters button{
+    padding:6px 14px;border-radius:20px;border:1.5px solid #dde5e0;background:white;
+    font-size:12px;cursor:pointer;font-weight:600;color:var(--muted);
+  }
+  .filters button.active{background:var(--primary);color:white;border-color:var(--primary);}
+
+  .issue-list{display:flex;flex-direction:column;gap:12px;max-height:640px;overflow-y:auto;padding-right:4px;}
+  .issue{
+    border:1px solid #e6ede8;border-radius:12px;padding:14px 16px;
+    display:flex;justify-content:space-between;gap:12px;align-items:flex-start;
+    animation:fadeIn .35s ease;
+  }
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+  .issue .left{flex:1;}
+  .issue .cat-icon{
+    width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+    font-size:17px;margin-right:10px;flex-shrink:0;
+  }
+  .issue-top{display:flex;align-items:center;gap:10px;}
+  .issue h3{font-size:14.5px;}
+  .issue p.desc{font-size:12.5px;color:var(--muted);margin-top:4px;}
+  .issue .meta{font-size:11px;color:#8a9a90;margin-top:6px;}
+  .priority-badge{
+    padding:4px 10px;border-radius:8px;font-size:11px;font-weight:700;color:white;white-space:nowrap;height:fit-content;
+  }
+  .p-high{background:var(--danger);}
+  .p-medium{background:var(--warn);}
+  .p-low{background:var(--ok);}
+
+  .score-box{text-align:center;min-width:54px;}
+  .score-box .num{font-size:20px;font-weight:800;color:var(--primary);}
+  .score-box .lbl{font-size:9px;color:var(--muted);text-transform:uppercase;}
+
+  footer{text-align:center;padding:20px;font-size:12px;color:var(--muted);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="logo">CP</div>
+    <div>
+      <h1>CivicPulse AI</h1>
+      <p>Smart Community Issue Intelligence — from complaint to decision, instantly</p>
+    </div>
+  </div>
+  <div class="stats-bar">
+    <div class="stat-pill"><b id="statTotal">0</b>Reports</div>
+    <div class="stat-pill"><b id="statHigh">0</b>High priority</div>
+    <div class="stat-pill"><b id="statTime">~4s</b>Avg triage time</div>
+  </div>
+</header>
+
+<main>
+  <section class="card">
+    <h2>📍 Report a Civic Issue</h2>
+    <label>What's the issue?</label>
+    <textarea id="descInput" placeholder="e.g. Large pothole near the school gate, cars are swerving into the bike lane to avoid it..."></textarea>
+
+    <label>Location</label>
+    <div class="loc-row">
+      <input type="text" id="locInput" placeholder="e.g. Sector 12 Main Road">
+    </div>
+
+    <label>Optional photo note</label>
+    <input type="text" id="photoNote" placeholder="e.g. photo shows standing water, 2ft wide crack">
+
+    <button class="submit-btn" id="submitBtn">Analyze &amp; Submit Report</button>
+
+    <div class="ai-result" id="aiResult">
+      <div id="aiBadges"></div>
+      <div id="aiText" style="margin-top:8px;"></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>🧭 Live Municipal Triage Queue <span style="font-weight:400;font-size:12px;color:var(--muted);">(AI-ranked by urgency)</span></h2>
+    <div class="filters" id="filters">
+      <button data-f="all" class="active">All</button>
+      <button data-f="Road">Roads</button>
+      <button data-f="Sanitation">Sanitation</button>
+      <button data-f="Water">Water</button>
+      <button data-f="Electrical">Electrical</button>
+      <button data-f="Safety">Safety</button>
+    </div>
+    <div class="issue-list" id="issueList"></div>
+  </section>
+</main>
+
+<footer>CivicPulse AI · Prototype for Gen AI Academy APAC · Built for smarter, faster civic decision-making</footer>
+
+<script>
+// ---- Simulated AI classification engine (rule + keyword based, mimics an LLM triage layer) ----
+const CATEGORY_RULES = [
+  { cat: "Road", icon:"🛣️", color:"#8D6E63", keys:["pothole","road","street","crack","pavement","bike lane","traffic","footpath"] },
+  { cat: "Sanitation", icon:"🗑️", color:"#6D4C41", keys:["garbage","trash","waste","dump","overflow","bin","litter"] },
+  { cat: "Water", icon:"💧", color:"#1C7CD6", keys:["water","leak","pipe","flood","drain","sewage","standing water"] },
+  { cat: "Electrical", icon:"💡", color:"#E08E1D", keys:["streetlight","light","electric","wire","pole","power","outage"] },
+  { cat: "Safety", icon:"🚨", color:"#C0392B", keys:["accident","danger","unsafe","crime","fire","collapse","gas leak"] },
+];
+
+const URGENCY_KEYS = {
+  high:["school","hospital","children","accident","gas leak","fire","collapse","danger","injur","emergency","exposed wire","flood"],
+  medium:["swerving","overflow","standing water","crack","damaged","broken"],
+};
+
+function classify(text){
+  const lower = text.toLowerCase();
+  let best = { cat:"General", icon:"📋", color:"#5C6F65", score:0 };
+  for(const rule of CATEGORY_RULES){
+    const hits = rule.keys.filter(k=>lower.includes(k)).length;
+    if(hits > best.score){ best = {...rule, score:hits}; }
+  }
+
+  let urgency = "low";
+  let baseScore = 35 + Math.round(Math.random()*15);
+  if(URGENCY_KEYS.high.some(k=>lower.includes(k))){ urgency="high"; baseScore = 78 + Math.round(Math.random()*20); }
+  else if(URGENCY_KEYS.medium.some(k=>lower.includes(k))){ urgency="medium"; baseScore = 50 + Math.round(Math.random()*25); }
+
+  // length / detail boosts confidence slightly
+  baseScore = Math.min(99, baseScore + Math.min(8, Math.floor(text.length/40)));
+
+  return { category: best.cat==="General"?"General":best.cat, icon: best.icon, color: best.color, urgency, score: baseScore };
+}
+
+const issues = [
+  {desc:"Deep pothole right outside the primary school gate, cars swerving dangerously to avoid it.", loc:"Sector 12 Main Road", time:"6 min ago"},
+  {desc:"Garbage bin overflowing for 4 days near the market, attracting stray animals.", loc:"Gandhi Market Rd", time:"22 min ago"},
+  {desc:"Streetlight has been out for 2 weeks on the walking path, feels unsafe at night.", loc:"Riverside Path", time:"1 hr ago"},
+  {desc:"Water pipe leak flooding the lane, standing water outside residential block.", loc:"Block C, Housing Colony", time:"2 hr ago"},
+];
+
+let currentFilter = "all";
+
+function render(){
+  const list = document.getElementById("issueList");
+  list.innerHTML = "";
+  const sorted = [...issues].sort((a,b)=> b.ai.score - a.ai.score);
+  const filtered = sorted.filter(i => currentFilter==="all" || i.ai.category===currentFilter);
+
+  filtered.forEach(i=>{
+    const div = document.createElement("div");
+    div.className = "issue";
+    const pClass = i.ai.urgency==="high"?"p-high":i.ai.urgency==="medium"?"p-medium":"p-low";
+    div.innerHTML = `
+      <div style="display:flex;">
+        <div class="cat-icon" style="background:${i.ai.color}22;color:${i.ai.color}">${i.ai.icon}</div>
+        <div class="left">
+          <div class="issue-top">
+            <h3>${i.ai.category} issue</h3>
+            <span class="priority-badge ${pClass}">${i.ai.urgency.toUpperCase()}</span>
+          </div>
+          <p class="desc">${i.desc}</p>
+          <div class="meta">📍 ${i.loc} · ${i.time}</div>
+        </div>
+      </div>
+      <div class="score-box">
+        <div class="num">${i.ai.score}</div>
+        <div class="lbl">urgency</div>
+      </div>
+    `;
+    list.appendChild(div);
+  });
+
+  document.getElementById("statTotal").textContent = issues.length;
+  document.getElementById("statHigh").textContent = issues.filter(i=>i.ai.urgency==="high").length;
+}
+
+// seed initial AI scores
+issues.forEach(i=> i.ai = classify(i.desc));
+render();
+
+document.getElementById("filters").addEventListener("click", e=>{
+  if(e.target.tagName !== "BUTTON") return;
+  document.querySelectorAll("#filters button").forEach(b=>b.classList.remove("active"));
+  e.target.classList.add("active");
+  currentFilter = e.target.dataset.f;
+  render();
+});
+
+document.getElementById("submitBtn").addEventListener("click", ()=>{
+  const desc = document.getElementById("descInput").value.trim();
+  const loc = document.getElementById("locInput").value.trim() || "Unknown location";
+  const photo = document.getElementById("photoNote").value.trim();
+  if(!desc){ alert("Please describe the issue first."); return; }
+
+  const btn = document.getElementById("submitBtn");
+  btn.disabled = true;
+  btn.textContent = "Analyzing with AI...";
+
+  setTimeout(()=>{
+    const fullText = desc + " " + photo;
+    const ai = classify(fullText);
+    issues.unshift({ desc, loc, time:"just now", ai });
+
+    const resBox = document.getElementById("aiResult");
+    resBox.classList.add("show");
+    document.getElementById("aiBadges").innerHTML = `
+      <span class="badge" style="background:${ai.color}">${ai.icon} ${ai.category}</span>
+      <span class="badge" style="background:${ai.urgency==='high'?'#C0392B':ai.urgency==='medium'?'#E08E1D':'#2E8B57'}">${ai.urgency.toUpperCase()} PRIORITY</span>
+      <span class="badge" style="background:#173A2B">Urgency score: ${ai.score}/100</span>
+    `;
+    document.getElementById("aiText").textContent = `AI Triage: This has been auto-routed to the ${ai.category} department queue and ranked ahead of ${issues.filter(x=>x.ai.score<ai.score).length} other open reports based on urgency signals detected in your description.`;
+
+    document.getElementById("descInput").value = "";
+    document.getElementById("locInput").value = "";
+    document.getElementById("photoNote").value = "";
+    btn.disabled = false;
+    btn.textContent = "Analyze & Submit Report";
+    render();
+  }, 900);
+});
+</script>
+</body>
+</html>
