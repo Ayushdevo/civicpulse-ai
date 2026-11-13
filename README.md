@@ -13,6 +13,8 @@
 
 ## 📖 Overview
 
+**Prototype:** Reports and the example queue exist only in the current browser page. They are not transmitted to municipal authorities or saved after a reload. The scores are heuristic demonstrations, not validated emergency assessments.
+
 CivicPulse AI is an intelligent civic issue triage platform that helps municipalities prioritize citizen complaints based on urgency, risk, and public impact.
 
 Traditional complaint systems process reports in the order they are received, causing critical issues to wait behind routine requests. CivicPulse AI introduces an AI-powered prioritization layer that automatically classifies complaints, scores urgency, and creates a ranked action queue for faster decision-making.
