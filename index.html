@@ -201,9 +201,14 @@ const CATEGORY_RULES = [
 ];
 
 const URGENCY_KEYS = {
-  high:["school","hospital","children","accident","gas leak","fire","collapse","danger","injur","emergency","exposed wire","flood"],
+  high:["school","hospital","children","accident","gas leak","fire","collapse","danger","dangerous","dangerously","injury","injuries","injured","emergency","exposed wire","flood"],
   medium:["swerving","overflow","standing water","crack","damaged","broken"],
 };
+
+function hasUrgencyTerm(text, key){
+  const escaped = key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return new RegExp(`\\b${escaped}s?\\b`).test(text);
+}
 
 function classify(text){
   const lower = text.toLowerCase();
@@ -215,8 +220,8 @@ function classify(text){
 
   let urgency = "low";
   let baseScore = 42;
-  if(URGENCY_KEYS.high.some(k=>lower.includes(k))){ urgency="high"; baseScore = 85; }
-  else if(URGENCY_KEYS.medium.some(k=>lower.includes(k))){ urgency="medium"; baseScore = 62; }
+  if(URGENCY_KEYS.high.some(k=>hasUrgencyTerm(lower, k))){ urgency="high"; baseScore = 85; }
+  else if(URGENCY_KEYS.medium.some(k=>hasUrgencyTerm(lower, k))){ urgency="medium"; baseScore = 62; }
 
   // length / detail boosts confidence slightly
   baseScore = Math.min(99, baseScore + Math.min(8, Math.floor(text.length/40)));
