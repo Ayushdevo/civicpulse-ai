@@ -214,9 +214,9 @@ function classify(text){
   }
 
   let urgency = "low";
-  let baseScore = 35 + Math.round(Math.random()*15);
-  if(URGENCY_KEYS.high.some(k=>lower.includes(k))){ urgency="high"; baseScore = 78 + Math.round(Math.random()*20); }
-  else if(URGENCY_KEYS.medium.some(k=>lower.includes(k))){ urgency="medium"; baseScore = 50 + Math.round(Math.random()*25); }
+  let baseScore = 42;
+  if(URGENCY_KEYS.high.some(k=>lower.includes(k))){ urgency="high"; baseScore = 85; }
+  else if(URGENCY_KEYS.medium.some(k=>lower.includes(k))){ urgency="medium"; baseScore = 62; }
 
   // length / detail boosts confidence slightly
   baseScore = Math.min(99, baseScore + Math.min(8, Math.floor(text.length/40)));
