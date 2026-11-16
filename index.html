@@ -207,10 +207,17 @@ const URGENCY_KEYS = {
 
 function classify(text){
   const lower = text.toLowerCase();
-  let best = { cat:"General", icon:"📋", color:"#5C6F65", score:0 };
+  let best = { cat:"General", icon:"📋", color:"#5C6F65", score:0, specificity:0 };
   for(const rule of CATEGORY_RULES){
-    const hits = rule.keys.filter(k=>lower.includes(k)).length;
-    if(hits > best.score){ best = {...rule, score:hits}; }
+    const matches = rule.keys.filter(key => {
+      const escaped = key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      return new RegExp(`\\b${escaped}s?\\b`).test(lower);
+    });
+    const hits = matches.length;
+    const specificity = Math.max(0, ...matches.map(key => key.length));
+    if(hits > best.score || (hits === best.score && specificity > best.specificity)){
+      best = {...rule, score:hits, specificity};
+    }
   }
 
   let urgency = "low";
