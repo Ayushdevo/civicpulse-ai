@@ -233,6 +233,13 @@ const issues = [
 
 let currentFilter = "all";
 
+// Report text is user-provided and must remain text when inserted into markup.
+function escapeHtml(value){
+  return String(value).replace(/[&<>"']/g, char => ({
+    "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
+  })[char]);
+}
+
 function render(){
   const list = document.getElementById("issueList");
   list.innerHTML = "";
@@ -251,8 +258,8 @@ function render(){
             <h3>${i.ai.category} issue</h3>
             <span class="priority-badge ${pClass}">${i.ai.urgency.toUpperCase()}</span>
           </div>
-          <p class="desc">${i.desc}</p>
-          <div class="meta">📍 ${i.loc} · ${i.time}</div>
+          <p class="desc">${escapeHtml(i.desc)}</p>
+          <div class="meta">📍 ${escapeHtml(i.loc)} · ${escapeHtml(i.time)}</div>
         </div>
       </div>
       <div class="score-box">
