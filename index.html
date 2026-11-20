@@ -155,21 +155,21 @@
 <main>
   <section class="card">
     <h2>📍 Report a Civic Issue</h2>
-    <label>What's the issue?</label>
+    <label for="descInput">What's the issue?</label>
     <textarea id="descInput" placeholder="e.g. Large pothole near the school gate, cars are swerving into the bike lane to avoid it..."></textarea>
 
-    <label>Location</label>
+    <label for="locInput">Location</label>
     <div class="loc-row">
       <input type="text" id="locInput" placeholder="e.g. Sector 12 Main Road">
     </div>
 
-    <label>Optional photo note</label>
+    <label for="photoNote">Optional photo note</label>
     <input type="text" id="photoNote" placeholder="e.g. photo shows standing water, 2ft wide crack">
 
     <button class="submit-btn" id="submitBtn">Analyze Example</button>
     <p>Prototype only: reports stay in this page, are cleared on reload, and are not sent to any authority.</p>
 
-    <div class="ai-result" id="aiResult">
+    <div class="ai-result" id="aiResult" role="status">
       <div id="aiBadges"></div>
       <div id="aiText" style="margin-top:8px;"></div>
     </div>
