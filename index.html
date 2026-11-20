@@ -148,7 +148,6 @@
   <div class="stats-bar">
     <div class="stat-pill"><b id="statTotal">0</b>Reports</div>
     <div class="stat-pill"><b id="statHigh">0</b>High priority</div>
-    <div class="stat-pill"><b id="statTime">~4s</b>Avg triage time</div>
   </div>
 </header>
 
@@ -305,31 +304,23 @@ document.getElementById("submitBtn").addEventListener("click", ()=>{
   const photo = document.getElementById("photoNote").value.trim();
   if(!desc){ alert("Please describe the issue first."); return; }
 
-  const btn = document.getElementById("submitBtn");
-  btn.disabled = true;
-  btn.textContent = "Analyzing example...";
+  const fullText = desc + " " + photo;
+  const ai = classify(fullText);
+  issues.unshift({ desc, loc, time:"just now", ai });
 
-  setTimeout(()=>{
-    const fullText = desc + " " + photo;
-    const ai = classify(fullText);
-    issues.unshift({ desc, loc, time:"just now", ai });
+  const resBox = document.getElementById("aiResult");
+  resBox.classList.add("show");
+  document.getElementById("aiBadges").innerHTML = `
+    <span class="badge" style="background:${ai.color}">${ai.icon} ${ai.category}</span>
+    <span class="badge" style="background:${ai.urgency==='high'?'#C0392B':ai.urgency==='medium'?'#E08E1D':'#2E8B57'}">${ai.urgency.toUpperCase()} PRIORITY</span>
+    <span class="badge" style="background:#173A2B">Urgency score: ${ai.score}/100</span>
+  `;
+  document.getElementById("aiText").textContent = `Local example: Suggested category is ${ai.category}. This report has not been sent to a department and will disappear when the page reloads.`;
 
-    const resBox = document.getElementById("aiResult");
-    resBox.classList.add("show");
-    document.getElementById("aiBadges").innerHTML = `
-      <span class="badge" style="background:${ai.color}">${ai.icon} ${ai.category}</span>
-      <span class="badge" style="background:${ai.urgency==='high'?'#C0392B':ai.urgency==='medium'?'#E08E1D':'#2E8B57'}">${ai.urgency.toUpperCase()} PRIORITY</span>
-      <span class="badge" style="background:#173A2B">Urgency score: ${ai.score}/100</span>
-    `;
-    document.getElementById("aiText").textContent = `Local example: Suggested category is ${ai.category}. This report has not been sent to a department and will disappear when the page reloads.`;
-
-    document.getElementById("descInput").value = "";
-    document.getElementById("locInput").value = "";
-    document.getElementById("photoNote").value = "";
-    btn.disabled = false;
-    btn.textContent = "Analyze Example";
-    render();
-  }, 900);
+  document.getElementById("descInput").value = "";
+  document.getElementById("locInput").value = "";
+  document.getElementById("photoNote").value = "";
+  render();
 });
 </script>
 </body>
