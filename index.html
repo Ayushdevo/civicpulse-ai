@@ -177,12 +177,12 @@
   <section class="card">
     <h2>🧭 Local Example Queue <span style="font-weight:400;font-size:12px;color:var(--muted);">(rule-ranked by urgency)</span></h2>
     <div class="filters" id="filters">
-      <button data-f="all" class="active">All</button>
-      <button data-f="Road">Roads</button>
-      <button data-f="Sanitation">Sanitation</button>
-      <button data-f="Water">Water</button>
-      <button data-f="Electrical">Electrical</button>
-      <button data-f="Safety">Safety</button>
+      <button aria-pressed="true" data-f="all" class="active">All</button>
+      <button aria-pressed="false" data-f="Road">Roads</button>
+      <button aria-pressed="false" data-f="Sanitation">Sanitation</button>
+      <button aria-pressed="false" data-f="Water">Water</button>
+      <button aria-pressed="false" data-f="Electrical">Electrical</button>
+      <button aria-pressed="false" data-f="Safety">Safety</button>
     </div>
     <div class="issue-list" id="issueList"></div>
   </section>
@@ -258,6 +258,12 @@ function render(){
   const sorted = [...issues].sort((a,b)=> b.ai.score - a.ai.score);
   const filtered = sorted.filter(i => currentFilter==="all" || i.ai.category===currentFilter);
 
+  if(filtered.length === 0){
+    const empty = document.createElement("p");
+    empty.textContent = "No reports in this category.";
+    list.appendChild(empty);
+  }
+
   filtered.forEach(i=>{
     const div = document.createElement("div");
     div.className = "issue";
@@ -292,8 +298,11 @@ render();
 
 document.getElementById("filters").addEventListener("click", e=>{
   if(e.target.tagName !== "BUTTON") return;
-  document.querySelectorAll("#filters button").forEach(b=>b.classList.remove("active"));
-  e.target.classList.add("active");
+  document.querySelectorAll("#filters button").forEach(button=>{
+    const selected = button === e.target;
+    button.classList.toggle("active", selected);
+    button.setAttribute("aria-pressed", String(selected));
+  });
   currentFilter = e.target.dataset.f;
   render();
 });
