@@ -16,4 +16,6 @@ test('explicit hazards, related word forms and medium signals remain recognized'
     assert.equal(classify(report).urgency, 'high');
   }
   assert.equal(classify('broken lights').urgency, 'medium');
+  assert.equal(classify('exposed\nwire near the park').urgency, 'high');
+  assert.equal(classify('gas-leak near the station').category, 'Safety');
 });

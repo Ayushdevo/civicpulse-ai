@@ -211,7 +211,7 @@ function hasUrgencyTerm(text, key){
 }
 
 function classify(text){
-  const lower = text.toLowerCase();
+  const lower = text.toLowerCase().replace(/[\s-]+/g, " ");
   let best = { cat:"General", icon:"📋", color:"#5C6F65", score:0, specificity:0 };
   for(const rule of CATEGORY_RULES){
     const matches = rule.keys.filter(key => {
