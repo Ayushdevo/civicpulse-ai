@@ -296,14 +296,18 @@ function render(){
 issues.forEach(i=> i.ai = classify(i.desc));
 render();
 
-document.getElementById("filters").addEventListener("click", e=>{
-  if(e.target.tagName !== "BUTTON") return;
+function selectFilter(filter){
   document.querySelectorAll("#filters button").forEach(button=>{
-    const selected = button === e.target;
+    const selected = button.dataset.f === filter;
     button.classList.toggle("active", selected);
     button.setAttribute("aria-pressed", String(selected));
   });
-  currentFilter = e.target.dataset.f;
+  currentFilter = filter;
+}
+
+document.getElementById("filters").addEventListener("click", e=>{
+  if(e.target.tagName !== "BUTTON") return;
+  selectFilter(e.target.dataset.f);
   render();
 });
 
@@ -316,6 +320,8 @@ document.getElementById("submitBtn").addEventListener("click", ()=>{
   const fullText = desc + " " + photo;
   const ai = classify(fullText);
   issues.unshift({ desc, loc, time:"just now", ai });
+  // Reveal the new report even if a different category was selected.
+  selectFilter("all");
 
   const resBox = document.getElementById("aiResult");
   resBox.classList.add("show");
