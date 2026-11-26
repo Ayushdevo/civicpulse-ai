@@ -116,6 +116,11 @@
     animation:fadeIn .35s ease;
   }
   @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+  @media (prefers-reduced-motion: reduce){
+    .issue{animation:none;}
+    button.submit-btn{transition:none;}
+    button.submit-btn:hover{transform:none;}
+  }
   .issue .left{flex:1;}
   .issue .cat-icon{
     width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;
