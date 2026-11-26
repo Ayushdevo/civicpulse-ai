@@ -194,15 +194,15 @@
 // ---- Simulated AI classification engine (rule + keyword based, mimics an LLM triage layer) ----
 const CATEGORY_RULES = [
   { cat: "Road", icon:"🛣️", color:"#8D6E63", keys:["pothole","road","street","crack","pavement","bike lane","traffic","footpath"] },
-  { cat: "Sanitation", icon:"🗑️", color:"#6D4C41", keys:["garbage","trash","waste","dump","overflow","bin","litter"] },
-  { cat: "Water", icon:"💧", color:"#1C7CD6", keys:["water","leak","pipe","flood","drain","sewage","standing water"] },
+  { cat: "Sanitation", icon:"🗑️", color:"#6D4C41", keys:["garbage","trash","waste","dump","overflow","overflowing","overflowed","bin","litter"] },
+  { cat: "Water", icon:"💧", color:"#1C7CD6", keys:["water","leak","pipe","flood","flooding","flooded","drain","sewage","standing water"] },
   { cat: "Electrical", icon:"💡", color:"#E08E1D", keys:["streetlight","light","electric","wire","pole","power","outage"] },
   { cat: "Safety", icon:"🚨", color:"#C0392B", keys:["accident","danger","unsafe","crime","fire","collapse","gas leak"] },
 ];
 
 const URGENCY_KEYS = {
-  high:["school","hospital","children","accident","gas leak","fire","collapse","danger","dangerous","dangerously","injury","injuries","injured","emergency","exposed wire","flood"],
-  medium:["swerving","overflow","standing water","crack","damaged","broken"],
+  high:["school","hospital","children","accident","gas leak","fire","collapse","danger","dangerous","dangerously","injury","injuries","injured","emergency","exposed wire","flood","flooding","flooded"],
+  medium:["swerving","overflow","overflowing","overflowed","standing water","crack","damaged","broken"],
 };
 
 function hasUrgencyTerm(text, key){

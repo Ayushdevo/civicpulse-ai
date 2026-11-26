@@ -19,3 +19,15 @@ test('explicit hazards, related word forms and medium signals remain recognized'
   assert.equal(classify('exposed\nwire near the park').urgency, 'high');
   assert.equal(classify('gas-leak near the station').category, 'Safety');
 });
+
+test('inflected flooding and overflow reports retain their intended priority', () => {
+  for (const report of ['the lane is flooding', 'the lane flooded overnight']) {
+    assert.equal(classify(report).urgency, 'high');
+    assert.equal(classify(report).category, 'Water');
+  }
+  for (const report of ['the bin is overflowing', 'the bin overflowed yesterday']) {
+    assert.equal(classify(report).urgency, 'medium');
+    assert.equal(classify(report).category, 'Sanitation');
+  }
+  assert.equal(classify('a floodlight needs repair').urgency, 'low');
+});
